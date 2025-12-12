@@ -1,140 +1,201 @@
-# OKX自动化网格交易机器人
+# OKX Automated Grid Trading Bot
 
-这是一个基于 Python 的自动化交易程序，专为OKX交易所的 OKB-USDT 交易对设计。该程序采用网格交易策略，旨在通过动态调整网格和仓位来捕捉市场波动，并内置风险管理机制。
+This is a Python-based automated trading program designed specifically for the OKB-USDT trading pair on the OKX exchange. The program employs a grid trading strategy, aiming to capture market volatility by dynamically adjusting the grid and position size, and includes a built-in risk management mechanism.
 
-## 核心功能
+## Core Functions
 
-*   **自动化网格交易**: 针对 OKB-USDT 交易对执行网格买卖策略。
-*   **动态网格调整**: 根据市场波动率自动调整网格大小 (`config.py` 中的 `GRID_PARAMS`)。
-*   **风险管理**:
-    *   最大回撤限制 (`MAX_DRAWDOWN`)
-    *   每日亏损限制 (`DAILY_LOSS_LIMIT`)
-    *   最大仓位比例限制 (`MAX_POSITION_RATIO`)
-*   **Web 用户界面**: 提供一个简单的 Web 界面 (通过 `web_server.py`)，用于实时监控交易状态、账户信息、订单和调整配置。
-*   **状态持久化**: 将交易状态保存到 `data/` 目录下的 JSON 文件中，以便重启后恢复。
-*   **通知推送**: 可通过 PushPlus 发送重要事件和错误通知 (`PUSHPLUS_TOKEN`)。
-*   **日志记录**: 详细的运行日志记录在 `trading_system.log` 文件中。
+* **Automated Grid Trading**: Executes grid buy/sell strategies for the OKB-USDT trading pair.
 
-## 环境要求
+* **Dynamic Grid Adjustment**: Automatically adjusts the grid size based on market volatility (GRID_PARAMS in `config.py`).
 
-*   Python 3.8+
-*   依赖库见 `requirements.txt` 文件。
-*   **最低服务器配置建议**：
-    *   CPU：1核及以上（推荐2核）
-    *   内存：512MB 及以上（推荐1GB或2GB）
-    *   硬盘：500MB 可用空间
-    *   操作系统：Windows、Linux 或 macOS
-    *   网络：需能访问OKX API和PushPlus（如启用通知）
-    *   网络建议：建议选择延迟低的网络，如日本等地区。
+* **Risk Management**:
 
-## 安装步骤
+* Maximum Drawdown Limit (MAX_DRAWDOWN)
 
-1.  **克隆仓库**:
-    ```bash
-    git clone https://github.com/tingxifa/okx-grid-bot
-    cd okx-grid-bot
-    ```
+* Daily Loss Limit (DAILY_LOSS_LIMIT)
 
-2.  **创建并激活虚拟环境**:
-    *   **Windows**:
-        ```bash
-        python -m venv .venv
-        .\.venv\Scripts\activate
-        ```
-    *   **Linux / macOS**:
-        ```bash
-        python3 -m venv .venv
-        source .venv/bin/activate
-        ```
+* Maximum Position Size Limit (MAX_POSITION_RATIO)
 
-3.  **安装依赖**:
-    ```bash
-    pip install -r requirements.txt
-    ```
+* **Web User Interface**: Provides a simple web interface (via `web_server.py`) for real-time monitoring of trading status, account information, orders, and configuration adjustments.
 
-## 配置
+* **State Persistence**: Saves transaction state to a JSON file in the `data/` directory for recovery after restart.
 
-1.  **创建 `.env` 文件**:
-    在项目根目录下创建一个名为 `.env` 的文件。
+* **Push Notifications**: Sends important event and error notifications (`PUSHPLUS_TOKEN`) via PushPlus.
 
-2.  **配置环境变量**:
-    在 `.env` 文件中添加以下必要的环境变量，并填入你的信息：
-    ```dotenv
-    # OKX API (必须)
-    OKX_API_KEY=YOUR_OKX_API_KEY
-    OKX_SECRET_KEY=YOUR_OKX_SECRET_KEY
-    OKX_PASSPHRASE=YOUR_OKX_PASSPHRASE
+* **Logging**: Detailed runtime logs are recorded in the `trading_system.log` file.
 
-    # PushPlus Token (可选, 用于消息推送)
-    PUSHPLUS_TOKEN=YOUR_PUSHPLUS_TOKEN
+## Environment Requirements
 
-    # 初始设置 (可选, 影响首次运行和统计)
-    # 如不设置，INITIAL_PRINCIPAL 和 INITIAL_BASE_PRICE 默认为 0
-    INITIAL_PRINCIPAL=1000.0  # 你的初始总资产 (USDT)
-    INITIAL_BASE_PRICE=600.0   # 你认为合适的初始基准价格 (用于首次启动确定方向)
-    ```
-    *   **重要**: 确保你的OKX API Key 具有现货交易权限，但**不要**开启提现权限。
+* Python 3.8+
 
-3.  **调整交易参数 (可选)**:
-    你可以根据自己的策略需求修改 `config.py` 文件中的参数，例如：
-    *   `BASE_SYMBOL` : 'OKB'  # 基础币种
-    *   `QUOTE_SYMBOL` : 'USDT'  # 计价币种
-    *   `INITIAL_GRID`: 初始网格大小 (%)
-    *   `MIN_TRADE_AMOUNT`: 最小交易金额 (USDT)
-    *   `MAX_POSITION_RATIO`, `MIN_POSITION_RATIO`: 最大/最小仓位比例
-    *   风险参数 (`MAX_DRAWDOWN`, `DAILY_LOSS_LIMIT`)
-    *   波动率与网格对应关系 (`GRID_PARAMS['volatility_threshold']`)
+* See the `requirements.txt` file for dependencies.
 
-## 运行
+* **Minimum Server Configuration Recommendations**:
 
-在激活虚拟环境的项目根目录下运行主程序：
+* CPU: 1 core or more (2 cores recommended)
 
-```bash
-python main.py
-```
+* Memory: 512MB or more (1GB or 2GB recommended)
 
-程序启动后将开始连接交易所、初始化状态并执行交易逻辑。
+* Disk Space: 500MB available space
 
+* Operating System: Windows, Linux, or macOS
 
-## docker部署
+* Network: Must be able to access the OKX API and PushPlus (if notifications are enabled)
 
-部署前请先根据上文说明配置好 .env 文件的环境变量。
+* Network Recommendation: Low-latency networks are recommended, such as those in Japan.
 
-```bash
-# 拉取代码
-#（如已在上方步骤完成可跳过）
+## Installation Steps
+
+1. **Clone the repository**:
+
+``bash
+
 git clone https://github.com/tingxifa/okx-grid-bot
+
 cd okx-grid-bot
-# 部署镜像
-docker-compose up -d
+
 ```
 
-*如需自定义端口，请修改 docker-compose.yml 中的端口映射。*
+2. **Create and activate the virtual environment**:
 
-## Web 界面
+* **Windows**:
 
-程序启动后，会自动运行一个 Web 服务器。你可以通过浏览器访问以下地址来监控和管理交易机器人：
+``bash
+
+python -m venv .venv
+
+.\.venv\Scripts\activate
+
+```
+
+* **Linux / macOS**:
+
+``bash
+
+python3 -m venv .venv
+
+source .venv/bin/activate
+
+```
+
+3. **Install dependencies**:
+
+``bash
+
+pip install -r requirements.txt
+
+```
+
+## Configuration
+
+1. **Create the `.env` file**:
+
+Create a file named `.env` in the project root directory.
+
+2. **Configure Environment Variables**:
+
+Add the following necessary environment variables to your `.env` file and fill in your information:
+
+``dotenv
+
+# OKX API (Required)
+
+OKX_API_KEY=YOUR_OKX_API_KEY
+
+OKX_SECRET_KEY=YOUR_OKX_SECRET_KEY
+
+OKX_PASSPHRASE=YOUR_OKX_PASSPHRASE
+
+# PushPlus Token (Optional, used for push notifications)
+
+PUSHPLUS_TOKEN=YOUR_PUSHPLUS_TOKEN
+
+# Initial Settings (Optional, affects first run and statistics)
+
+# If not set, INITIAL_PRINCIPAL and INITIAL_BASE_PRICE default to 0
+
+INITIAL_PRINCIPAL=1000.0 # Your initial total assets (USDT)
+
+INITIAL_BASE_PRICE=600.0 # Your appropriate initial benchmark price (used to determine direction on initial launch)
+
+``` **Important:** Ensure your OKX API Key has spot trading permissions, but **do not** enable withdrawal permissions.
+
+3. **Adjust Trading Parameters (Optional)**:
+
+You can modify the parameters in the `config.py` file according to your strategy needs, for example:
+
+* `BASE_SYMBOL` : 'OKB' # Base currency
+
+* `QUOTE_SYMBOL` : 'USDT' # Pricing currency
+
+* `INITIAL_GRID`: Initial grid size (%)
+
+* `MIN_TRADE_AMOUNT`: Minimum trade amount (USDT)
+
+* `MAX_POSITION_RATIO`, `MIN_POSITION_RATIO`: Maximum/minimum position sizing
+
+* Risk parameters (`MAX_DRAWDOWN`, `DAILY_LOSS_LIMIT`)
+
+* Volatility to grid correspondence (`GRID_PARAMS['volatility_threshold']`)
+
+## Running
+
+Run the main program in the root directory of the project in the activated virtual environment:
+
+```bash python` main.py
+
+```
+
+After the program starts, it will connect to the exchange, initialize its state, and execute trading logic.
+
+## Docker Deployment
+
+Before deployment, please configure the environment variables in the `.env` file according to the instructions above.
+
+``bash
+
+# Pull the code
+
+# (Skip if you have already completed the above steps)
+
+git clone https://github.com/tingxifa/okx-grid-bot
+
+cd okx-grid-bot
+
+# Deploy the image
+
+docker-compose up -d
+
+```
+
+*If you need to customize the port, please modify the port mapping in `docker-compose.yml`.*
+
+## Web Interface
+
+After the program starts, a web server will run automatically. You can access the following address through a browser to monitor and manage the trading bot:
 
 `http://127.0.0.1:58080`
 
-*注意: 端口号 (58080) 在 `web_server.py` 中定义，如果无法访问请检查该文件。*
+*Note: The port number (58080) is defined in `web_server.py`. If you cannot access it, please check this file. *
 
-Web 界面可以让你查看当前状态、账户余额、持仓、挂单、历史记录，并可能提供一些手动操作或配置调整的功能。
+The web interface allows you to view your current status, account balance, positions, pending orders, and historical records, and may offer some manual operation or configuration adjustment functions.
 
-## 日志
+## Logs
 
-程序的运行日志会输出到控制台，并同时记录在项目根目录下的 `trading_system.log` 文件中。
+The program's runtime logs will be output to the console and simultaneously recorded in the `trading_system.log` file in the project root directory.
 
-## 注意事项
+## Precautions
 
-*   **交易风险**: 所有交易决策均由程序自动执行，但市场存在固有风险。请务必了解策略原理和潜在风险，并自行承担交易结果。不建议在未充分理解和测试的情况下投入大量资金。
-*   **API Key 安全**: 妥善保管你的 API Key 和 Secret，不要泄露给他人。
-*   **配置合理性**: 确保 `config.py` 和 `.env` 中的配置符合你的预期和风险承受能力。
+* **Trading Risks**: All trading decisions are executed automatically by the program, but the market inherently carries risks. Please ensure you understand the strategy principles and potential risks, and bear the consequences of your trades yourself. It is not recommended to invest large sums of money without fully understanding and testing.
 
-## 贡献
+* **API Key Security**: Keep your API Key and Secret safe and do not disclose them to others.
 
-欢迎提交 Pull Requests 或 Issues 来改进项目。
+* **Configuration Appropriateness**: Ensure that the configurations in `config.py` and `.env` meet your expectations and risk tolerance.
 
-## 致谢
+## Contributions
 
-本项目基于 [GridBNB-USDT](https://github.com/EBOLABOY/GridBNB-USDT) 项目改编而来，特此感谢 [@EBOLABOY](https://github.com/EBOLABOY) 提供的优秀开源项目。
+Pull Requests or Issues are welcome to improve the project.
+
+## Acknowledgements
+
+This project is adapted from the [GridBNB-USDT](https://github.com/EBOLABOY/GridBNB-USDT) project. Special thanks to [@EBOLABOY](https://github.com/EBOLABOY) for providing this excellent open-source project.
